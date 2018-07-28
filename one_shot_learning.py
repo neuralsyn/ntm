@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--test_batch_num', default=100)
     parser.add_argument('--n_train_classes', default=1200)
     parser.add_argument('--n_test_classes', default=423)
+    parser.add_argument('--num_save_steps', default=5000, type=int)
+    parser.add_argument('--data_dir', default='./data')
     parser.add_argument('--save_dir', default='./save/one_shot_learning')
     parser.add_argument('--tensorboard_dir', default='./summary/one_shot_learning')
     args = parser.parse_args()
@@ -43,6 +45,7 @@ def main():
 def train(args):
     model = NTMOneShotLearningModel(args)
     data_loader = OmniglotDataLoader(
+        data_dir=args.data_dir,
         image_size=(args.image_width, args.image_height),
         n_train_classses=args.n_train_classes,
         n_test_classes=args.n_test_classes
@@ -83,7 +86,7 @@ def train(args):
 
             # Save model
 
-            if b % 5000 == 0 and b > 0:
+            if b % args.num_save_steps == 0 and b > 0:
                 saver.save(sess, args.save_dir + '/' + args.model + '/model.tfmodel', global_step=b)
 
             # Train
@@ -99,6 +102,7 @@ def train(args):
 def test(args):
     model = NTMOneShotLearningModel(args)
     data_loader = OmniglotDataLoader(
+        data_dir=args.data_dir,
         image_size=(args.image_width, args.image_height),
         n_train_classses=args.n_train_classes,
         n_test_classes=args.n_test_classes
